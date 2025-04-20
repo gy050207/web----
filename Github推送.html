@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub 推送记录</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #0366d6;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f5f5f5;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .checkmark {
+            color: green;
+            font-weight: bold;
+            text-align: center;
+            display: block;
+        }
+        .last-updated {
+            color: #666;
+            font-style: italic;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>GitHub 推送记录</h1>
+    <p>仓库: <strong>gy050207/web----</strong></p>
+    <div id="weeks-table"></div>
+    <p class="last-updated" id="last-updated"></p>
+
+    <script>
+        // 配置信息
+        const owner = 'gy050207';
+        const repo = 'web----';
+        const refreshInterval = 5 * 60 * 1000; // 5分钟刷新一次
+
+        // 定义16周的日期范围 (2025.3.3 - 2025.6.22)
+        const WEEKS = [
+            { num: 1,  start: new Date('2025-03-03'), end: new Date('2025-03-09') },
+            { num: 2,  start: new Date('2025-03-10'), end: new Date('2025-03-16') },
+            { num: 3,  start: new Date('2025-03-17'), end: new Date('2025-03-23') },
+            { num: 4,  start: new Date('2025-03-24'), end: new Date('2025-03-30') },
+            { num: 5,  start: new Date('2025-03-31'), end: new Date('2025-04-06') },
+            { num: 6,  start: new Date('2025-04-07'), end: new Date('2025-04-13') },
+            { num: 7,  start: new Date('2025-04-14'), end: new Date('2025-04-20') },
+            { num: 8,  start: new Date('2025-04-21'), end: new Date('2025-04-27') },
+            { num: 9,  start: new Date('2025-04-28'), end: new Date('2025-05-04') },
+            { num: 10, start: new Date('2025-05-05'), end: new Date('2025-05-11') },
+            { num: 11, start: new Date('2025-05-12'), end: new Date('2025-05-18') },
+            { num: 12, start: new Date('2025-05-19'), end: new Date('2025-05-25') },
+            { num: 13, start: new Date('2025-05-26'), end: new Date('2025-06-01') },
+            { num: 14, start: new Date('2025-06-02'), end: new Date('2025-06-08') },
+            { num: 15, start: new Date('2025-06-09'), end: new Date('2025-06-15') },
+            { num: 16, start: new Date('2025-06-16'), end: new Date('2025-06-22') }
+        ];
+
+        // 获取GitHub推送事件
+        async function fetchGitHubPushEvents(owner, repo) {
+            try {
+                // GitHub API URL
+                const url = `https://api.github.com/repos/${owner}/${repo}/events?per_page=100`;
+                
+                // 添加随机参数避免缓存
+                const noCacheUrl = `${url}&_=${Date.now()}`;
+                
+                const response = await fetch(noCacheUrl);
+                if (!response.ok) {
+                    throw new Error(`GitHub API请求失败: ${response.status}`);
+                }
+                
+                const events = await response.json();
+                // 只筛选PushEvent类型的事件
+                return events.filter(event => event.type === 'PushEvent');
+            } catch (error) {
+                console.error('获取推送事件失败:', error);
+                return [];
+            }
+        }
+
+        // 判断日期是否在周范围内
+        function isDateInWeek(eventDate, week) {
+            // 调整周的结束时间到23:59:59
+            const weekEnd = new Date(week.end);
+            weekEnd.setHours(23, 59, 59, 999);
+            
+            return eventDate >= week.start && eventDate <= weekEnd;
+        }
+
+        // 生成并显示周次表格
+        function displayWeeksTable(pushEvents) {
+            const weeksTable = document.getElementById('weeks-table');
+            
+            // 创建表格HTML
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>周次</th>
+                            <th>日期范围</th>
+                            <th>是否有推送</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // 检查每一周是否有推送
+            WEEKS.forEach(week => {
+                // 查找这一周是否有推送
+                const hasPush = pushEvents.some(event => {
+                    const eventDate = new Date(event.created_at);
+                    return isDateInWeek(eventDate, week);
+                });
+                
+                // 格式化日期范围 (去掉年份)
+                const startStr = formatDateWithoutYear(week.start);
+                const endStr = formatDateWithoutYear(week.end);
+                
+                tableHTML += `
+                    <tr>
+                        <td>第${week.num}周</td>
+                        <td>${startStr} 至 ${endStr}</td>
+                        <td class="checkmark">${hasPush ? '✓' : ''}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            weeksTable.innerHTML = tableHTML;
+            
+            // 更新最后刷新时间
+            document.getElementById('last-updated').textContent = 
+                `最后更新: ${new Date().toLocaleString()}`;
+        }
+
+        // 格式化日期（去掉年份）
+        function formatDateWithoutYear(date) {
+            return date.toLocaleDateString('zh-CN', { 
+                month: '2-digit', 
+                day: '2-digit' 
+            }).replace(/\//g, '-');
+        }
+
+        // 主函数：获取数据并显示表格
+        async function updateTable() {
+            try {
+                const pushEvents = await fetchGitHubPushEvents(owner, repo);
+                displayWeeksTable(pushEvents);
+            } catch (error) {
+                console.error('更新表格失败:', error);
+            }
+        }
+
+        // 初始化：立即加载并设置定时刷新
+        updateTable();
+        setInterval(updateTable, refreshInterval);
+    </script>
+</body>
+</html>
