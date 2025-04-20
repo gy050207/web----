@@ -72,7 +72,6 @@
             fetchAndDisplayData();
         });
 
-        // 定义16周的起止日期 (2025.3.3 - 2025.6.22)
         const WEEKS = [
             { start: new Date('2025-03-03'), end: new Date('2025-03-09') },
             { start: new Date('2025-03-10'), end: new Date('2025-03-16') },
@@ -92,7 +91,7 @@
             { start: new Date('2025-06-16'), end: new Date('2025-06-22') }
         ];
         
-        // 主函数：获取并显示数据
+        // 获取并显示数据
         async function fetchAndDisplayData() {
             try {
                 // 获取推送事件
@@ -106,7 +105,6 @@
                 // 显示16周表格
                 displayWeeksTable(pushEvents);
                 
-                // 隐藏加载提示
                 document.getElementById('loading').style.display = 'none';
                 
             } catch (error) {
@@ -116,7 +114,7 @@
             }
         }
         
-        // 函数1: 从GitHub获取推送事件
+        // 从GitHub获取推送事件
         async function fetchGitHubPushEvents(owner, repo) {
             const apiUrl = `https://api.github.com/repos/${owner}/${repo}/events`;
             
@@ -137,15 +135,10 @@
                       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         }
         
-        // 函数2: 显示十六周表格，有推送的周打钩
         function displayWeeksTable(pushEvents) {
             const weeksEl = document.getElementById('weeksTable');
-            
-            // 创建表格
             let html = '<table>';
             html += '<tr><th>周数</th><th>日期范围</th><th>推送记录</th><th>推送次数</th></tr>';
-            
-            // 遍历预定义的16周
             WEEKS.forEach((week, index) => {
                 const weekNumber = index + 1;
                 const startStr = formatDate(week.start);
