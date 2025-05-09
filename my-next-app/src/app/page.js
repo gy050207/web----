@@ -3,7 +3,8 @@ import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div className={styles.page}>
+    <div >
+      <h1>自定义内容</h1>
       <main className={styles.main}>
         <Image
           className={styles.logo}
