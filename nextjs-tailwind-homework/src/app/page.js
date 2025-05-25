@@ -1,103 +1,72 @@
-import Image from "next/image";
+import Navbar from "@/components/Navbar";
+import ExerciseCard from "@/components/ExerciseCard"; // 导入练习卡片组件
+import exercises from "@/data/exercises.json"; // 从 JSON 文件导入练习数据
+
+// 示例练习数据
+// const exercises = [
+//   {
+//     id: 1,
+//     title: "HTML 基础结构练习",
+//     description: "学习并实践HTML5的基本文档结构，包括头部、主体和常用标签。",
+//     imageUrl: "https://images.unsplash.com/photo-1600695268275-1a6468700bd5", // 关键词: html, web
+//     link: "/exercises/html-basics", // 假设的练习链接
+//     tags: ["HTML", "基础"],
+//   },
+//   {
+//     id: 2,
+//     title: "CSS 盒模型与布局",
+//     description: "深入理解CSS盒模型，并使用Flexbox和Grid进行响应式页面布局。",
+//     imageUrl: "https://source.unsplash.com/random/600x400?css,layout", // 关键词: css, layout
+//     link: "/exercises/css-layout",
+//     tags: ["CSS", "Flexbox", "Grid", "响应式"],
+//   },
+//   {
+//     id: 3,
+//     title: "JavaScript DOM 操作",
+//     description: "通过JavaScript动态操作DOM元素，实现交互式网页功能。",
+//     imageUrl: "https://source.unsplash.com/random/600x400?javascript,dom", // 关键词: javascript, dom
+//     link: "/exercises/js-dom",
+//     tags: ["JavaScript", "DOM", "交互"],
+//   },
+//   {
+//     id: 4,
+//     title: "React 组件化开发",
+//     description: "学习使用React构建可复用的UI组件，理解状态和属性。",
+//     imageUrl: "https://source.unsplash.com/random/600x400?react,components", // 关键词: react, components
+//     // link: "/exercises/react-components", // 示例：无链接
+//     tags: ["React", "组件", "SPA"],
+//   },
+// ];
 
 export default function Home() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <div className="flex flex-col min-h-screen bg-slate-50">
+      <Navbar />
+      <main className="flex-grow container mx-auto px-4 py-8">
+        <header className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-slate-800 mb-2">
+            《Web前端开发》课程练习
+          </h1>
+          <p className="text-lg text-slate-600">
+            欢迎来到课程练习展示平台，这里汇集了各个阶段的学习成果。
+          </p>
+        </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+        {/* 练习卡片网格 */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {exercises.map((exercise) => (
+            <ExerciseCard
+              key={exercise.id}
+              title={exercise.title}
+              description={exercise.description}
+              imageUrl={exercise.imageUrl}
+              link={exercise.link}
+              tags={exercise.tags}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          ))}
         </div>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      {/* Footer 组件将在 layout.js 中添加 */}
     </div>
   );
 }
